@@ -3,11 +3,10 @@ Miner
 
 Miner for some data on web.
 
-How to run easily(node.js is required):
+How to install(node.js is required):
 Execute following commands under this folder
 ```sh
 npm install
-./jobs.openshift/cron/hourly/search-on-web.js
 ```
 
 Deploy command:
