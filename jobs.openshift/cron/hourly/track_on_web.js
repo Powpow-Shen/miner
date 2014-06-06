@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+var now = new Date();
+if (now.getHours() !== 0) {
+  process.exit(0);
+}
+// Run at 24 o'clock
 var logger = require('log4js').getLogger(require('path').basename(__filename)),
   desiredPrices = [],
   smtpConfig = null,
