@@ -9,4 +9,3 @@
 #           jobs.deny which is checked before jobs.allow (this file).
 #
 search_on_web.js
-track_on_web.js
