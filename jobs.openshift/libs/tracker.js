@@ -61,33 +61,40 @@ Tracker.prototype._setUpQ = function() {
 
     function query() {
       var body = '';
-      http.get(task.url, function(res) {
+      var req = http.get(task.url, function(res) {
         self.logger.info('Response for ' + task.url + ': ' + res.statusCode);
-        res.on('data', function(chunk) {
-          body += chunk;
-        });
-        res.on('end', function() {
-          self.logger.info('Connection ended');
-          self.logger.info('Target price for ' + task.url + ' is ' + task.targetPrice);
-          var currentPrice = self._find(task.url, body),
-            message = '';
-          if (currentPrice) {
-            if (parseInt(currentPrice) <= parseInt(task.targetPrice)) {
-              message = '"' + task.targetPrice + '" is reached in ' + task.url;
-              self.logger.info(message);
-              // Worth notifying
-              self._notify(task.email, message, callback);
+        if (res.statusCode !== 200) {
+          req.abort();
+          var message = 'The target url ( ' + task.url + ' ) is not normal.';
+          self.logger.warn(message);
+          self._notify(task.email, message, callback);
+        } else {
+          res.on('data', function(chunk) {
+            body += chunk;
+          });
+          res.on('end', function() {
+            self.logger.info('Connection ended');
+            self.logger.info('Target price for ' + task.url + ' is ' + task.targetPrice);
+            var currentPrice = self._find(task.url, body),
+              message = '';
+            if (currentPrice) {
+              if (parseInt(currentPrice) <= parseInt(task.targetPrice)) {
+                message = '"' + task.targetPrice + '" is reached in ' + task.url;
+                self.logger.info(message);
+                // Worth notifying
+                self._notify(task.email, message, callback);
+              } else {
+                // NOT worth notifying, but worth recording.
+                callback();
+              }
             } else {
-              // NOT worth notifying, but worth recording.
-              callback();
+              message = 'Regular expression for ' + task.url + ' is wrong or non-exitent.';
+              self.logger.warn(message);
+              // Notify for regular expression needs to be changed.
+              self._notify(self.smtpConfig.user, message, callback);
             }
-          } else {
-            message = 'Regular expression for ' + task.url + ' is wrong or non-exitent.';
-            self.logger.warn(message);
-            // Notify for regular expression needs to be changed.
-            self._notify(self.smtpConfig.user, message, callback);
-          }
-        });
+          });
+        }
       }).on('error', function(e) {
         self.logger.error('Got error: ' + e.message);
         callback(e);
