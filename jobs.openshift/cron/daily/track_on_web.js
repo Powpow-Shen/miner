@@ -3,7 +3,7 @@
 var Path = require('path');
 var Log4js = require('log4js');
 var Tracker = require(__dirname + '/../../libs/tracker');
-var Csv = require('Csv');
+var Csv = require('csv');
 
 var logger = Log4js.getLogger(Path.basename(__filename)),
   desiredPrices = [],
