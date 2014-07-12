@@ -1,39 +1,38 @@
 {
-    "name": "Miner",
-    "private": true,
-    "version": "0.0.0",
-    "description": "Miner for some data",
-    "dependencies": {
-      "express": "~3.4.4",
-
-      "async": "~0.8.0",
-      "nodemailer": "~0.5.6",
-      "log4js": "~0.6.14",
-      "csv": "~0.3.7",
-      "request": "~2.36.0"
-    },
-    "devDependencies": {
-
-      "jshint": "~2.4.0"
-    },
-    "scripts": {
-      "start": "node server.js",
-      "debug": "node debug server.js",
-      "lint": "jshint ."
-    },
-    "main": "server.js",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/Powpow-Shen/miner"
-    },
-    "engines": {
-      "node": ">= 0.6.0",
-      "npm": ">= 1.0.0"
-    },
-    "author": {
-      "name": "Powpow Shen",
-      "email": "",
-      "url": ""
-    },
-    "license": ""
+  "name": "Miner",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Miner for some data",
+  "dependencies": {
+    "async": "~0.8.0",
+    "csv": "~0.3.7",
+    "es6-promise": "^1.0.0",
+    "express": "~3.4.4",
+    "log4js": "~0.6.14",
+    "nodemailer": "~0.5.6",
+    "request": "~2.36.0"
+  },
+  "devDependencies": {
+    "jshint": "~2.4.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "debug": "node debug server.js",
+    "lint": "jshint ."
+  },
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Powpow-Shen/miner"
+  },
+  "engines": {
+    "node": ">= 0.6.0",
+    "npm": ">= 1.0.0"
+  },
+  "author": {
+    "name": "Powpow Shen",
+    "email": "",
+    "url": ""
+  },
+  "license": ""
 }

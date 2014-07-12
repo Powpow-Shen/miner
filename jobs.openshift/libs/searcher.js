@@ -1,6 +1,13 @@
 /*jshint node:true */
 'use strict';
 
+var Http = require('http');
+var Path = require('path');
+var Log4js = require('log4js');
+var Async = require('async');
+var Nodemailer = require('nodemailer');
+
+module.exports = Searcher;
 /**
  * @class Searcher
  */
@@ -11,7 +18,7 @@
  * @param {object} smtpConfig Smtp server configuration for sending email notifications. Ex: {"user": "zz@gmail.com", "pass": "@@@@"}
  */
 function Searcher(desiredObj, smtpConfig) {
-  this.filename = require('path').basename(__filename);
+  this.filename = Path.basename(__filename);
   this.message = ' are founded in ';
   this.taskQ = null;
   this.timeInterval = 5000; // Time interval for querying. Shorter interval means querying faster and may hurt the sites.
@@ -19,7 +26,7 @@ function Searcher(desiredObj, smtpConfig) {
   this.desiredObj = desiredObj;
   this.smtpConfig = smtpConfig;
 
-  this.logger = require('log4js').getLogger(require('path').basename(__filename));
+  this.logger = Log4js.getLogger(Path.basename(__filename));
 }
 
 /**
@@ -51,15 +58,14 @@ Searcher.prototype.search = function(callback) {
  * @method _setUpQ
  */
 Searcher.prototype._setUpQ = function() {
-  var http = require('http'),
-    self = this;
-  this.taskQ = require('async').queue(function(task, callback) {
+  var self = this;
+  this.taskQ = Async.queue(function(task, callback) {
 
     setTimeout(query, self.timeInterval);
 
     function query() {
       var body = '';
-      http.get(task.url, function(res) {
+      Http.get(task.url, function(res) {
         self.logger.info('Response for ' + task.url + ': ' + res.statusCode);
         res.on('data', function(chunk) {
           body += chunk;
@@ -110,10 +116,9 @@ Searcher.prototype._find = function(data, keywords) {
 Searcher.prototype._notify = function(email, matchedStrings, url, callback) {
   var fullMessage = '"' + matchedStrings + '"' + this.message + url;
   this.logger.info(fullMessage);
-  var nodemailer = require('nodemailer');
   if (this.smtpConfig) {
     this.logger.info('Sending an email.');
-    var smtpTransport = nodemailer.createTransport('SMTP', this.smtpConfig);
+    var smtpTransport = Nodemailer.createTransport('SMTP', this.smtpConfig);
     var mailOptions = {
       from: this.smtpConfig.user,
       to: email,
@@ -135,5 +140,3 @@ Searcher.prototype._notify = function(email, matchedStrings, url, callback) {
     callback(new Error('SMTP configuration is invalid.'));
   }
 };
-
-module.exports = Searcher;

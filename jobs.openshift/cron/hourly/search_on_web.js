@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
-var logger = require('log4js').getLogger(require('path').basename(__filename)),
+var Path = require('path');
+var Log4js = require('log4js');
+var Searcher = require(__dirname + '/../../libs/searcher');
+
+var logger = Log4js.getLogger(Path.basename(__filename)),
   desiredObj = null;
 try {
   desiredObj = require(__dirname + '/../../configs/desired_obj.json');
@@ -13,7 +17,6 @@ try {
 var smtpConfig = null;
 smtpConfig = require(__dirname + '/../../configs/smtp_config.json');
 
-var Searcher = require(__dirname + '/../../libs/searcher');
 var searcher = new Searcher(desiredObj, smtpConfig);
 searcher.search(function(err) {
   if (err) {

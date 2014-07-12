@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
-var logger = require('log4js').getLogger(require('path').basename(__filename)),
+var Path = require('path');
+var Log4js = require('log4js');
+var Tracker = require(__dirname + '/../../libs/tracker');
+var Csv = require('Csv');
+
+var logger = Log4js.getLogger(Path.basename(__filename)),
   desiredPrices = [],
   smtpConfig = null,
   trackRules = null;
@@ -11,7 +16,6 @@ loadCSV(function(err) {
   } else {
     loadSMTPConfig();
     loadTrackRules();
-    var Tracker = require(__dirname + '/../../libs/tracker');
     var tracker = new Tracker(desiredPrices, trackRules, smtpConfig);
     tracker.track(function(err) {
       if (err) {
@@ -24,9 +28,8 @@ loadCSV(function(err) {
 });
 
 function loadCSV(callback) {
-  var csv = require('csv'),
-    properties = null;
-  csv()
+  var  properties = null;
+  Csv()
     .from.path(__dirname + '/../../configs/desired_prices.csv')
     .on('data', function(data) {
       if (desiredPrices.length === 0 && !properties) {
