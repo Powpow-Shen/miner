@@ -85,7 +85,7 @@ Tracker.prototype._setUpQ = function() {
               });
             }
           }).on('error', function(e) {
-            self.logger.error('Got error: ' + e.message);
+            self.logger.error('Got error: ' + e.message + ' while requesting ' + task.url);
             reject(e);
           });
         });
