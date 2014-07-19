@@ -1,6 +1,7 @@
 /*jshint node:true */
 'use strict';
 
+var Http = require('http');
 var Https = require('https');
 var Path = require('path');
 var Log4js = require('log4js');
@@ -65,7 +66,11 @@ Searcher.prototype._setUpQ = function() {
 
     function query() {
       var body = '';
-      var req = Https.get(task.url, function(res) {
+      var request = Http;
+      if(task.url.indexOf('https') === 0) {
+        request = Https;
+      }
+      var req = request.get(task.url, function(res) {
         self.logger.info('Response for ' + task.url + ': ' + res.statusCode);
         if (res.statusCode !== 200) {
           req.abort();
