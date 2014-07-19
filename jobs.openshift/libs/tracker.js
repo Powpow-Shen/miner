@@ -117,7 +117,8 @@ Tracker.prototype._setUpQ = function() {
       }).catch(function(error) {
         // Notify users that the respone of the page is not normal
         self._notify(task.email, error.message);
-        // return nothing to continue to the next link
+        // continue to the next link
+        //throw 'Continue to the next link';
       }).then(function(message) {
         // Notify or not
         if (message) {

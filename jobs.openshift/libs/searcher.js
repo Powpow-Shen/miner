@@ -1,7 +1,7 @@
 /*jshint node:true */
 'use strict';
 
-var Http = require('http');
+var Https = require('https');
 var Path = require('path');
 var Log4js = require('log4js');
 var Async = require('async');
@@ -14,7 +14,7 @@ module.exports = Searcher;
 
 /**
  * @constructor Searcher
- * @param {array} desiredObj Desired objects. Ex: [{"url": "http://...", keywords: ["x", "bb"], "email": "xxx@xxx.com"}]
+ * @param {array} desiredObj Desired objects. Ex: [{"url": "https://...", keywords: ["x", "bb"], "email": "xxx@xxx.com"}]
  * @param {object} smtpConfig Smtp server configuration for sending email notifications. Ex: {"user": "zz@gmail.com", "pass": "@@@@"}
  */
 function Searcher(desiredObj, smtpConfig) {
@@ -65,21 +65,27 @@ Searcher.prototype._setUpQ = function() {
 
     function query() {
       var body = '';
-      Http.get(task.url, function(res) {
+      var req = Https.get(task.url, function(res) {
         self.logger.info('Response for ' + task.url + ': ' + res.statusCode);
-        res.on('data', function(chunk) {
-          body += chunk;
-        });
-        res.on('end', function() {
-          self.logger.info('Connection ended');
-          self.logger.info('Looking for ' + task.keywords);
-          var matchedStrings = self._find(body, task.keywords);
-          if (matchedStrings.length !== 0) {
-            self._notify(task.email, matchedStrings, task.url, callback);
-          } else {
-            callback();
-          }
-        });
+        if (res.statusCode !== 200) {
+          req.abort();
+          var message = 'The target url ( ' + task.url + ' ) is not normal.';
+          callback(new Error(message));
+        } else {
+          res.on('data', function(chunk) {
+            body += chunk;
+          });
+          res.on('end', function() {
+            self.logger.info('Connection ended');
+            self.logger.info('Looking for ' + task.keywords);
+            var matchedStrings = self._find(body, task.keywords);
+            if (matchedStrings.length !== 0) {
+              self._notify(task.email, matchedStrings, task.url, callback);
+            } else {
+              callback();
+            }
+          });
+        }
       }).on('error', function(e) {
         self.logger.error('Got error: ' + e.message);
         callback(e);
